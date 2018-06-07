@@ -43,7 +43,7 @@
       refreshMainForm() {
 
       }
-    }
+    },
   };
 </script>
 
