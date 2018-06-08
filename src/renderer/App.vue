@@ -65,7 +65,7 @@ export default {
       let spider;
       xml2js.parseString(
         xml,
-        { explicitArray: false, explicitRoot: false },
+        { explicitArray: false, explicitRoot: false, valueProcessors: [xml2js.processors.parseBooleans] },
         (err, obj) => {
           if (err) {
             return console.log(err);

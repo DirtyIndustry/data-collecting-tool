@@ -14,7 +14,7 @@ const mutations = {
     },
     addSpider(state, msg) {
         state.spiders.push(msg)
-        state.filelist.push(msg.name)
+        state.filelist.push(msg.name.toLowerCase())
         function SortByName(x,y){
             return ((x.name === y.name) ? 0 : ((x.name > y.name) ? 1 : -1 ))
         }

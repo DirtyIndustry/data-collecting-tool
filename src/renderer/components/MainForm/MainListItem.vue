@@ -30,16 +30,6 @@ export default {
       required: true
     }
   },
-  computed: {
-    active: {
-      get(){
-        return this.spider.active
-      },
-      set(value){
-        this.$store.commit("updateActive", value)
-      },
-    }
-  },
   methods: {
     switchActive() {
       this.$store.commit("switchActive", this.spider);

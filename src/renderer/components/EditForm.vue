@@ -17,7 +17,7 @@
 			</form>
 		</div>
 		<div>
-			<button @click="confirmEdit">确认</button>
+			<button @click="confirmEdit" v-bind:disabled = "notValid">确认</button>
       <button @click="cancelEdit">取消</button>
 		</div>
 	</div>
@@ -36,13 +36,26 @@ export default {
         repeat: "",
         active: true
       },
-      addingNew: true
+      addingNew: true,
     };
   },
   computed: {
     folderpath() {
       return path.join(__static, "Entry Files");
-    }
+    },
+    isEqual(){
+      if(this.$store.state.SpiderList.spiderToEdit === null){
+        return this.spiderToEdit.name === ""
+      }else{
+        return this.spiderToEdit.name === this.$store.state.SpiderList.spiderToEdit.name
+      }
+    },
+    isContain() {
+      return this.$store.state.SpiderList.filelist.includes(this.spiderToEdit.name.toLowerCase())
+    },
+    notValid() {
+        return !(this.isEqual === this.isContain)
+    },
   },
   methods: {
     confirmEdit() {
@@ -70,12 +83,14 @@ export default {
             return console.log(err);
           }
         });
+        this.$store.commit('setSpiderToEdit', null)
         this.$router.push({ path: "/" });
       }
     },
     cancelEdit() {
+      this.$store.commit('setSpiderToEdit', null)
       this.$router.push({ path: "/" });
-    }
+    },
   },
   mounted() {
     if (this.$store.state.SpiderList.spiderToEdit !== null) {
