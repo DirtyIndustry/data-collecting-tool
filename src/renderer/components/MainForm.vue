@@ -17,40 +17,38 @@
 </template>
 
 <script>
-import MainListItem from "./MainForm/MainListItem.vue";
+import MainListItem from './MainForm/MainListItem.vue'
+import xmlReader from '../utils/xmlReader'
 
 export default {
+  name: 'MainForm',
+  mixins: [xmlReader],
   components: {
     MainListItem
   },
-  data() {
-    return {};
+  data () {
+    return {}
   },
   computed: {
-    spiders() {
-      return this.$store.state.SpiderList.spiders;
+    spiders () {
+      return this.$store.state.SpiderList.spiders
     }
   },
   methods: {
-    removeSpider(nameToRemove) {
-      this.$store.commit("removeSpider", nameToRemove);
-      let fs = require("fs");
-      let path = require("path");
-      fs.unlink(
-        path.join(__static, "Entry Files", nameToRemove + ".xml"),
-        err => {
-          if (err) {
-            return console.log(err);
-          }
-        }
-      );
+    removeSpider (nameToRemove) {
+      this.$store.commit('removeSpider', nameToRemove)
+      let xmlwriter = require('../utils/xmlWriter')
+      xmlwriter.deleteXml(nameToRemove)
     },
-    addNewSpider: function() {
-      this.$router.push({ path: "/edit" });
+    addNewSpider: function () {
+      this.$router.push({ path: '/edit' })
     },
-    refreshMainForm() {}
+    refreshMainForm () {
+      this.$store.commit('clearSpiderList')
+      this.readStaticFolder('Entry Files')
+    }
   }
-};
+}
 </script>
 
 <style>

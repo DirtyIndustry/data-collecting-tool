@@ -32,29 +32,16 @@ export default {
   },
   methods: {
     switchActive() {
-      this.$store.commit("switchActive", this.spider);
-      let fs = require("fs");
-      let path = require("path");
-      let xml2js = require("xml2js");
-      let filename = path.join(
-        __static,
-        "Entry Files",
-        this.spider.name + ".xml"
-      );
-      let xmlValues = new xml2js.Builder({ rootname: "spider" });
-      let xmlString = xmlValues.buildObject(this.spider);
-      fs.writeFile(filename, xmlString, err => {
-        if (err) {
-          return console.log(err);
-        }
-      });
+      this.$store.commit('switchActive', this.spider)
+      let xmlwriter = require('../../utils/xmlWriter')
+      xmlwriter.writeXml(this.spider)
     },
     editSpider() {
-      this.$store.commit("setSpiderToEdit", this.spider);
-      this.$router.push({ path: "/edit" });
+      this.$store.commit('setSpiderToEdit', this.spider)
+      this.$router.push({ path: '/edit' })
     }
   }
-};
+}
 </script>
 
 <style>
