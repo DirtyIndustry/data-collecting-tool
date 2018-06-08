@@ -6,5 +6,6 @@ build/*
 node_modules/
 npm-debug.log
 npm-debug.log.*
+static/Entry Files/*
 thumbs.db
 !.gitkeep

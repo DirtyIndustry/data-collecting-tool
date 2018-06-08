@@ -24,6 +24,9 @@
 </template>
 
 <script>
+import fs from "fs";
+import path from "path";
+
 export default {
   data() {
     return {
@@ -32,6 +35,11 @@ export default {
       repeat: "",
       active: true
     };
+  },
+  computed: {
+    folderpath() {
+      return path.join(__static,'Entry Files')
+    }
   },
   methods: {
     confirmEdit() {
@@ -43,13 +51,27 @@ export default {
           active: this.active
         };
         this.$store.commit("addSpider", spider);
+        let filename = this.folderpath +'/'+ spider.name + '.xml'
+        
+        let convert = require('xml-js')
+        let options = {compact: true, ignoreComment: false, spaces: 2}
+        
+        var xmlString = convert.json2xml(spider, options)
+
+        fs.writeFile(filename,xmlString,(err)=>{
+          if(err){
+            return console.log(err)
+          }
+          console.log(spider)
+          console.log(xmlString)
+        })
         this.$router.push({ path: "/" });
       }
     },
-    cancelEdit(){
+    cancelEdit() {
       this.$router.push({ path: "/" });
-    },
-  }
+    }
+  },
 };
 </script>
 

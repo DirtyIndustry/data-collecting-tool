@@ -7,8 +7,8 @@
 </template>
 
 <script>
-import Header from "./components/common/Header.vue"
-import Footer from "./components/common/Footer.vue"
+import Header from "./components/Header.vue"
+import Footer from "./components/Footer.vue"
 import fs from "fs"
 import path from 'path'
 
@@ -37,8 +37,8 @@ export default {
     },
     listingFile(filepath){
       this.isLoading=true
-      const fs = require('fs')
-      const path = require('path')
+      //const fs = require('fs')
+      //const path = require('path')
       fs.readdir(filepath,(err,file)=>{
         if(err){
           this.isLoading = false
@@ -48,17 +48,21 @@ export default {
         for(let filename of file){
           const stat = fs.statSync(path.join(filepath,filename))
           if(stat.isFile()){
-            if(path.extname(filename).toLowerCase() === '.pdf'){
+            if(path.extname(filename).toLowerCase() === '.txt'){
               this.tableData.push({
                 filename: filename,
-                filesize: stat.size
+                filesize: stat.size,
               })
             }
           }
         }
         this.isLoading = false
       })
-    }
+    },
+    readStatics(){
+      this.directorySelected = path.join(__static,'Entry Files')
+      this.listingFile(this.directorySelected)
+    },
   },
   mounted() {
     let spider = {
@@ -69,7 +73,7 @@ export default {
     }
     this.$store.commit("addSpider", spider)
 
-    this.showFileDialog()
+    this.readStatics()
   },
 }
 </script>
