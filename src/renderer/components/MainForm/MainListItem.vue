@@ -8,7 +8,7 @@
         <td>{{spider.name}}</td>
         <td rowspan="3">
           <button>Run</button>
-          <button>Mod</button>
+          <button @click="editSpider">Mod</button>
           <button @click="$emit('remove', spider.name)">Del</button>
         </td>
       </tr>
@@ -30,9 +30,38 @@ export default {
       required: true
     }
   },
+  computed: {
+    active: {
+      get(){
+        return this.spider.active
+      },
+      set(value){
+        this.$store.commit("updateActive", value)
+      },
+    }
+  },
   methods: {
     switchActive() {
       this.$store.commit("switchActive", this.spider);
+      let fs = require("fs");
+      let path = require("path");
+      let xml2js = require("xml2js");
+      let filename = path.join(
+        __static,
+        "Entry Files",
+        this.spider.name + ".xml"
+      );
+      let xmlValues = new xml2js.Builder({ rootname: "spider" });
+      let xmlString = xmlValues.buildObject(this.spider);
+      fs.writeFile(filename, xmlString, err => {
+        if (err) {
+          return console.log(err);
+        }
+      });
+    },
+    editSpider() {
+      this.$store.commit("setSpiderToEdit", this.spider);
+      this.$router.push({ path: "/edit" });
     }
   }
 };

@@ -3,16 +3,16 @@
 		<div>
 			<form>
 				<p>Name:
-					<input type="text" v-model="name">
+					<input type="text" v-model="spiderToEdit.name">
 				</p>
 				<p>Url:
-					<input type="text" v-model="url">
+					<input type="text" v-model="spiderToEdit.url">
 				</p>
 				<p>Repeat:
-					<input type="text" v-model="repeat">
+					<input type="text" v-model="spiderToEdit.repeat">
 				</p>
 				<p>Active:
-					<input type="checkbox" v-model="active">
+					<input type="checkbox" v-model="spiderToEdit.active">
 				</p>
 			</form>
 		</div>
@@ -30,41 +30,46 @@ import path from "path";
 export default {
   data() {
     return {
-      name: "",
-      url: "",
-      repeat: "",
-      active: true
+      spiderToEdit: {
+        name: "",
+        url: "",
+        repeat: "",
+        active: true
+      },
+      addingNew: true
     };
   },
   computed: {
     folderpath() {
-      return path.join(__static,'Entry Files')
+      return path.join(__static, "Entry Files");
     }
   },
   methods: {
     confirmEdit() {
       if (this.name !== "") {
-        let spider = {
-          name: this.name,
-          url: this.url,
-          repeat: this.repeat,
-          active: this.active
-        };
-        this.$store.commit("addSpider", spider);
-        let filename = this.folderpath +'/'+ spider.name + '.xml'
-        
-        let convert = require('xml-js')
-        let options = {compact: true, ignoreComment: false, spaces: 2}
-        
-        var xmlString = convert.json2xml(spider, options)
-
-        fs.writeFile(filename,xmlString,(err)=>{
-          if(err){
-            return console.log(err)
+        if (!this.addingNew) {
+          //let oldname = this.$store.state.SpiderList.spiderToEdit.name
+          fs.unlink(this.folderpath + "/" + this.$store.state.SpiderList.spiderToEdit.name + ".xml", (err) => {
+              if (err) {
+                return console.log(err);
+              }
+            }
+          );
+          this.$store.commit(
+            "removeSpider",
+            this.$store.state.SpiderList.spiderToEdit.name
+          );
+        }
+        this.$store.commit("addSpider", this.spiderToEdit);
+        let filename = this.folderpath + "/" + this.spiderToEdit.name + ".xml";
+        let xml2js = require("xml2js");
+        let xmlValues = new xml2js.Builder({ rootname: "spider" });
+        let xmlString = xmlValues.buildObject(this.spiderToEdit);
+        fs.writeFile(filename, xmlString, err => {
+          if (err) {
+            return console.log(err);
           }
-          console.log(spider)
-          console.log(xmlString)
-        })
+        });
         this.$router.push({ path: "/" });
       }
     },
@@ -72,6 +77,16 @@ export default {
       this.$router.push({ path: "/" });
     }
   },
+  mounted() {
+    if (this.$store.state.SpiderList.spiderToEdit !== null) {
+      this.spiderToEdit = JSON.parse(
+        JSON.stringify(this.$store.state.SpiderList.spiderToEdit)
+      );
+      this.addingNew = false;
+    } else {
+      this.addingNew = true;
+    }
+  }
 };
 </script>
 
