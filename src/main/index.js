@@ -1,4 +1,4 @@
-import { app, BrowserWindow } from 'electron'
+import { app, BrowserWindow, ipcMain } from 'electron'
 
 /**
  * Set `__static` path to static files in production
@@ -13,7 +13,7 @@ const winURL = process.env.NODE_ENV === 'development'
   ? `http://localhost:9080`
   : `file://${__dirname}/index.html`
 
-function createWindow () {
+function createWindow() {
   /**
    * Initial window options
    */
@@ -42,6 +42,21 @@ app.on('activate', () => {
   if (mainWindow === null) {
     createWindow()
   }
+})
+
+ipcMain.on('runSpider', (event, arg) => {
+  let workerWindow = new BrowserWindow({
+    height: 563,
+    userContentSize: true,
+    width: 1000,
+  })
+  workerWindow.loadURL('file://' + __static + '/worker.html')
+  workerWindow.on('closed',()=>{
+    workerWindow = null
+  })
+  workerWindow.webContents.on('did-finish-load', () => {
+    workerWindow.webContents.send('setSpider', arg)
+  })
 })
 
 /**
