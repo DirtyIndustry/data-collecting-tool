@@ -25,11 +25,10 @@
 </template>
 
 <script>
-import fs from "fs";
-import path from "path";
+import path from 'path'
 
 export default {
-  data() {
+  data () {
     return {
       spiderToEdit: {
         name: "",
@@ -39,72 +38,75 @@ export default {
         active: true,
       },
       addingNew: true,
-    };
+    }
   },
   computed: {
-    folderpath() {
-      return path.join(__static, "Entry Files");
+    folderpath () {
+      return path.join(__static, 'Entry Files')
     },
-    isEqual(){
-      if(this.$store.state.SpiderList.spiderToEdit === null){
-        return this.spiderToEdit.name === ""
-      }else{
+    isEqual () {
+      if (this.$store.state.SpiderList.spiderToEdit === null) {
+        return this.spiderToEdit.name === ''
+      } else {
         return this.spiderToEdit.name === this.$store.state.SpiderList.spiderToEdit.name
       }
     },
-    isContain() {
+    isContain () {
       return this.$store.state.SpiderList.filelist.includes(this.spiderToEdit.name.toLowerCase())
     },
-    notValid() {
+    notValid () {
+      if(this.checkName()===true){
         return !(this.isEqual === this.isContain)
+      }else return true
     },
   },
   methods: {
-    confirmEdit() {
-      if (this.name !== "") {
+    confirmEdit () {
+      if (this.name !== '') {
+        let xmlWriter = require('../utils/xmlWriter')
         if (!this.addingNew) {
-          //let oldname = this.$store.state.SpiderList.spiderToEdit.name
-          fs.unlink(this.folderpath + "/" + this.$store.state.SpiderList.spiderToEdit.name + ".xml", (err) => {
-              if (err) {
-                return console.log(err);
-              }
-            }
-          );
+          xmlWriter.deleteXml(this.$store.state.SpiderList.spiderToEdit.name)
           this.$store.commit(
-            "removeSpider",
+            'removeSpider',
             this.$store.state.SpiderList.spiderToEdit.name
-          );
+          )
         }
-        this.$store.commit("addSpider", this.spiderToEdit);
-        let filename = this.folderpath + "/" + this.spiderToEdit.name + ".xml";
-        let xml2js = require("xml2js");
-        let xmlValues = new xml2js.Builder({ rootname: "spider" });
-        let xmlString = xmlValues.buildObject(this.spiderToEdit);
-        fs.writeFile(filename, xmlString, err => {
-          if (err) {
-            return console.log(err);
-          }
-        });
-        this.$store.commit('setSpiderToEdit', null)
-        this.$router.push({ path: "/" });
+
+        this.$store.commit('addSpider', this.spiderToEdit)
+        xmlWriter.writeXml(this.spiderToEdit)
+
+        this.$router.push({ path: '/' })
       }
     },
-    cancelEdit() {
-      this.$store.commit('setSpiderToEdit', null)
-      this.$router.push({ path: "/" });
+    cancelEdit () {
+      this.$router.push({ path: '/' })
+    },
+    checkName () {
+      if (this.spiderToEdit.name.startsWith(' ') | this.spiderToEdit.name.endsWith(' ')){
+        return false
+      }
+      let reg = new RegExp(/'|#|&|\\|\/|:|\?|"|<|>|\*|\|/g)
+      if (reg.test(this.spiderToEdit.name) === true) {
+        return false
+      } else {
+        return true
+      }
     },
   },
-  mounted() {
+  created () {
     if (this.$store.state.SpiderList.spiderToEdit !== null) {
       this.spiderToEdit = JSON.parse(
         JSON.stringify(this.$store.state.SpiderList.spiderToEdit)
-      );
-      this.addingNew = false;
+      )
+      this.addingNew = false
     } else {
-      this.addingNew = true;
+      this.addingNew = true
     }
+  },
+  beforeDestroy(){
+    this.$store.commit('setSpiderToEdit', null)
   }
-};
+}
 </script>
 
 <style>
