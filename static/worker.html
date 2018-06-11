@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+
+<head></head>
+
+<body>
+  <p id="p1">hello, world.</p>
+  <button id="closeButton" onclick="closeMe()">Close</button>
+  <script>
+    const electron = require('electron')
+    const ipcRenderer = electron.ipcRenderer
+    const remote = electron.remote
+    let spider
+
+    function setSpider(arg){
+      this.spider = arg
+    }
+    ipcRenderer.on('setSpider', (event, args)=>{
+      setSpider(args)
+      document.getElementById("p1").innerHTML=this.spider.name
+    })
+    function closeMe(){
+      document.getElementById("p1").innerHTML='close me.'
+      let window = remote.getCurrentWindow()
+      window.close()
+    }
+  </script>
+</body>
+
+</html>

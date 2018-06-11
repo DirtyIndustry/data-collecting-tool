@@ -7,7 +7,7 @@
         </td>
         <td>{{spider.name}}</td>
         <td rowspan="3">
-          <button>Run</button>
+          <button @click="runSpider">Run</button>
           <button @click="editSpider">Mod</button>
           <button @click="$emit('remove', spider.name)">Del</button>
         </td>
@@ -37,9 +37,12 @@ export default {
       xmlwriter.writeXml(this.spider)
     },
     editSpider() {
-      this.$store.commit('setSpiderToEdit', this.spider)
-      this.$router.push({ path: '/edit' })
-    }
+      this.$store.commit("setSpiderToEdit", this.spider);
+      this.$router.push({ path: "/edit" });
+    },
+    runSpider() {
+      this.$electron.ipcRenderer.send("runSpider", this.spider);
+    },
   }
 }
 </script>

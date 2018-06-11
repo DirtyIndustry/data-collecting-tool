@@ -11,6 +11,7 @@
 				<p>Repeat:
 					<input type="text" v-model="spiderToEdit.repeat">
 				</p>
+        <p>StartTime:<input type="datetime-local" v-model="spiderToEdit.starttime"></p>
 				<p>Active:
 					<input type="checkbox" v-model="spiderToEdit.active">
 				</p>
@@ -30,10 +31,11 @@ export default {
   data () {
     return {
       spiderToEdit: {
-        name: '',
-        url: '',
-        repeat: '',
-        active: true
+        name: "",
+        url: "",
+        repeat: "",
+        starttime: "",
+        active: true,
       },
       addingNew: true,
     }
