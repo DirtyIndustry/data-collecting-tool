@@ -7,38 +7,31 @@
 </template>
 
 <script>
-import Header from './components/Header.vue'
-import Footer from './components/Footer.vue'
-import xmlReader from './utils/xmlReader'
+import Header from "./components/Header.vue";
+import Footer from "./components/Footer.vue";
+import xmlReader from "./utils/xmlReader";
 
 export default {
-  name: 'data-collecting-tool',
+  name: "data-collecting-tool",
   mixins: [xmlReader],
-  data () {
-    return {
-      directorySelected: '',
-      isLoading: false
+  data() {
+    return {};
+  },
+  computed: {
+    spiderlist() {
+      return this.$store.state.SpiderList.spiders;
     }
   },
   components: {
     Header,
     Footer
   },
-  methods: {
-
+  methods: {},
+  created() {
+    this.$store.dispatch("clearLists");
+    this.readStaticFolder("Entry Files");
   },
-  created () {
-    /*let spider = {
-      name: "New Spider into Vue",
-      url: "www.taobao.com",
-      repeat: "Yearly",
-      active: true
-    };
-    this.$store.commit("addSpider", spider);*/
-    this.$store.commit('clearSpiderList')
-    this.readStaticFolder('Entry Files')
-  }
-}
+};
 </script>
 
 <style>

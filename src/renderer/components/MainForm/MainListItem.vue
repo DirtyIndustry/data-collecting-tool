@@ -9,7 +9,7 @@
         <td rowspan="3">
           <button @click="runSpider">Run</button>
           <button @click="editSpider">Mod</button>
-          <button @click="$emit('remove', spider.name)">Del</button>
+          <button @click="$emit('remove', spider)">Del</button>
         </td>
       </tr>
       <tr>

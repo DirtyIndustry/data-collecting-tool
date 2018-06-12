@@ -66,13 +66,11 @@ export default {
         let xmlWriter = require('../utils/xmlWriter')
         if (!this.addingNew) {
           xmlWriter.deleteXml(this.$store.state.SpiderList.spiderToEdit.name)
-          this.$store.commit(
-            'removeSpider',
-            this.$store.state.SpiderList.spiderToEdit.name
-          )
+          this.$store.dispatch('removeSpider', this.$store.state.SpiderList.spiderToEdit)
         }
 
-        this.$store.commit('addSpider', this.spiderToEdit)
+        this.$store.dispatch('addSpider', this.spiderToEdit)
+        //this.$store.dispatch('buildTimeTable')
         xmlWriter.writeXml(this.spiderToEdit)
 
         this.$router.push({ path: '/' })

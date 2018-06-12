@@ -35,16 +35,16 @@ export default {
     }
   },
   methods: {
-    removeSpider (nameToRemove) {
-      this.$store.commit('removeSpider', nameToRemove)
+    removeSpider (spiderToRemove) {
+      this.$store.dispatch('removeSpider', spiderToRemove)
       let xmlwriter = require('../utils/xmlWriter')
-      xmlwriter.deleteXml(nameToRemove)
+      xmlwriter.deleteXml(spiderToRemove.name)
     },
     addNewSpider: function () {
       this.$router.push({ path: '/edit' })
     },
     refreshMainForm () {
-      this.$store.commit('clearSpiderList')
+      this.$store.dispatch('clearLists')
       this.readStaticFolder('Entry Files')
     }
   }

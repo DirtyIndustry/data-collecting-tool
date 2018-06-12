@@ -56,7 +56,7 @@ export default {
                     if (err) {
                         return console.log(err)
                     }
-                    this.$store.commit('addSpider', obj)
+                    this.$store.dispatch('addSpider',obj)
                 }
             )
         },
