@@ -83,7 +83,7 @@ const actions = {
         context.commit('spiderListRemove', spider)
         context.commit('fileListRemove', spider)
         context.commit('timeTableRemove', spider)
-    }
+    },
 }
 
 export default {

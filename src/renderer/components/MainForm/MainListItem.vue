@@ -37,11 +37,11 @@ export default {
       xmlwriter.writeXml(this.spider)
     },
     editSpider() {
-      this.$store.commit("setSpiderToEdit", this.spider);
-      this.$router.push({ path: "/edit" });
+      this.$store.commit('setSpiderToEdit', this.spider)
+      this.$router.push({ path: '/edit' })
     },
     runSpider() {
-      this.$electron.ipcRenderer.send("runSpider", this.spider);
+      this.$electron.ipcRenderer.send('runSpider', this.spider)
     },
   }
 }

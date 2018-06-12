@@ -31,10 +31,10 @@ export default {
   data () {
     return {
       spiderToEdit: {
-        name: "",
-        url: "",
-        repeat: "",
-        starttime: "",
+        name: '',
+        url: '',
+        repeat: '',
+        starttime: '',
         active: true,
       },
       addingNew: true,

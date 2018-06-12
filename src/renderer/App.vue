@@ -7,19 +7,19 @@
 </template>
 
 <script>
-import Header from "./components/Header.vue";
-import Footer from "./components/Footer.vue";
-import xmlReader from "./utils/xmlReader";
+import Header from './components/Header.vue'
+import Footer from './components/Footer.vue'
+import xmlReader from './utils/xmlReader'
 
 export default {
-  name: "data-collecting-tool",
+  name: 'data-collecting-tool',
   mixins: [xmlReader],
   data() {
-    return {};
+    return {}
   },
   computed: {
     spiderlist() {
-      return this.$store.state.SpiderList.spiders;
+      return this.$store.state.SpiderList.spiders
     }
   },
   components: {
@@ -28,10 +28,10 @@ export default {
   },
   methods: {},
   created() {
-    this.$store.dispatch("clearLists");
-    this.readStaticFolder("Entry Files");
+    this.$store.dispatch('clearLists')
+    this.readStaticFolder('Entry Files')
   },
-};
+}
 </script>
 
 <style>
