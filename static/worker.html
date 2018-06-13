@@ -14,40 +14,47 @@
     const cheerio = require('cheerio')
     let spider
 
-    function setSpider(arg){
+    function setSpider(arg) {
       this.spider = arg
     }
-    ipcRenderer.on('setSpider', (event, args)=>{
+    ipcRenderer.on('setSpider', (event, args) => {
       setSpider(args)
-      document.getElementById("p1").innerHTML=this.spider.name
+      document.getElementById("p1").innerHTML = this.spider.name
 
       let url = 'http://www.hyyyyj.dl.gov.cn/hyhjyzhybjc/hyzhyb/gzdt/8320/8320.shtml'
-      http.get(url, (res)=>{
+      //url = 'http://www.ziroom.com/'
+      http.get(url, (res) => {
         var html = ''
-        res.on('data', (data)=>{
-          html+=data
+        res.on('data', (data) => {
+          html += data
         })
-        res.on('end',()=>{
-          var slideListData = filterSlideList(html)
-          printInfo(slideListData)
+        res.on('end', () => {
+          let htmldata = getDataFromHtml(html)
+          //var slideListData = filterSlideList(html)
+          //printInfo(slideListData)
         })
-      }).on('error', ()=>{
+      }).on('error', () => {
         console.log('获取数据出错!')
       })
 
-      function getDataFromHtml(html){
-        if(html){
-          var $ = cheerio.load(html)
-          var innerhtml = $('#content_txtnr')
-          var result = []
-          innerhtml.find('p').each((item)=>{
-            
+      function getDataFromHtml(html) {
+        if (html) {
+          let result = []
+          let $ = cheerio.load(html)
+          let innerhtml = $('body').find('p')
+          innerhtml.each(function(i,elem){
+            let text = $(this).text()
+            text = text.trim()
+            if(text !== ''){
+              result.push(text)
+            }
           })
+          console.log(result)
         }
       }
 
-      function filterSlideList(html){
-        if (html){
+      function filterSlideList(html) {
+        if (html) {
           var $ = cheerio.load(html)
           // 根据id获取轮播图列表信息
           var slideList = $('#foucsSlideList');
@@ -55,21 +62,21 @@
           var slideListData = [];
 
           /* 轮播图列表信息遍历 */
-          slideList.find('li').each(function(item) {
+          slideList.find('li').each(function (item) {
 
-              var pic = $(this);
-              // 找到a标签并获取href属性
-              var pic_href = pic.find('a').attr('href');
-              // 找到a标签的子标签img并获取_src
-              var pic_src = pic.find('a').children('img').attr('_src');
-              // 找到a标签的子标签img并获取alt
-              var pic_message = pic.find('a').children('img').attr('alt');
-              // 向数组插入数据
-              slideListData.push({
-                  pic_href : pic_href,
-                  pic_message : pic_message,
-                  pic_src : pic_src
-              });
+            var pic = $(this);
+            // 找到a标签并获取href属性
+            var pic_href = pic.find('a').attr('href');
+            // 找到a标签的子标签img并获取_src
+            var pic_src = pic.find('a').children('img').attr('_src');
+            // 找到a标签的子标签img并获取alt
+            var pic_message = pic.find('a').children('img').attr('alt');
+            // 向数组插入数据
+            slideListData.push({
+              pic_href: pic_href,
+              pic_message: pic_message,
+              pic_src: pic_src
+            });
           });
           // 返回轮播图列表信息
           return slideListData;
@@ -78,29 +85,29 @@
         }
       }
 
-      function printInfo(slideListData){
+      function printInfo(slideListData) {
         // 计数
         var count = 0;
         // 遍历信息列表
-        slideListData.forEach(function(item) {
-            // 获取图片
-            var pic_src = item.pic_src;
-            // 获取图片对应的链接地址
-            var pic_href = item.pic_href;
-            // 获取图片信息
-            var pic_message = item.pic_message;
-            // 打印信息
-            console.log('第' + (++count) + '个轮播图');
-            console.log(pic_message);
-            console.log(pic_href);
-            console.log(pic_src);
-            console.log('\n');
+        slideListData.forEach(function (item) {
+          // 获取图片
+          var pic_src = item.pic_src;
+          // 获取图片对应的链接地址
+          var pic_href = item.pic_href;
+          // 获取图片信息
+          var pic_message = item.pic_message;
+          // 打印信息
+          console.log('第' + (++count) + '个轮播图');
+          console.log(pic_message);
+          console.log(pic_href);
+          console.log(pic_src);
+          console.log('\n');
         });
       }
     })
 
-    function closeMe(){
-      document.getElementById("p1").innerHTML='close me.'
+    function closeMe() {
+      document.getElementById("p1").innerHTML = 'close me.'
       let window = remote.getCurrentWindow()
       window.close()
     }
