@@ -86,11 +86,16 @@ const mutations = {
             }
             return result
         }
-        let checkpoint = state.timetable.find(function (item) {
-            return item.starttime === getStartTime(spider)
+        function SortByTime (x, y) {
+            return ((x.starttime === y.starttime) ? 0 : ((x.starttime > y.starttime) ? 1 : -1))
+        }
+        let time = getStartTime(spider)
+        let checkpoint = state.timetable.find((item) => {
+            return item.starttime.getTime() === time.getTime()
         })
         if (checkpoint === undefined) {
-            state.timetable.push({ starttime: getStartTime(spider), list: [spider] })
+            state.timetable.push({ starttime: time, list: [spider] })
+            state.timetable.sort(SortByTime)
         } else {
             checkpoint.list.push(spider)
         }
@@ -116,6 +121,9 @@ const mutations = {
                 }
             }
         }
+    },
+    timeTableShift(state){
+        state.timetable.shift()
     },
     switchActive (state, msg) {
         let s = state.spiders.find(spider => {
@@ -144,6 +152,12 @@ const actions = {
         context.commit('fileListRemove', spider)
         context.commit('timeTableRemove', spider)
     },
+    updateTimeTable(context, list){
+        context.commit('timeTableShift')
+        for(let item of list){
+            context.commit('timeTableAdd', item)
+        }
+    }
 }
 
 export default {
