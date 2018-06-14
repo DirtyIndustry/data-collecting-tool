@@ -2,24 +2,28 @@
 	<div>
 		<div>
 			<form>
-				<p>Name:
-					<input type="text" v-model="spiderToEdit.name">
+				<p>Name:<el-input type="text" v-model="spiderToEdit.name"></el-input>
 				</p>
-				<p>Url:
-					<input type="text" v-model="spiderToEdit.url">
+        <p>Domain:<el-input type="text" v-model="spiderToEdit.domain"></el-input>
+        </p>
+				<p>Url:<el-input type="text" v-model="spiderToEdit.url"></el-input>
 				</p>
-				<p>Repeat:
-					<input type="text" v-model="spiderToEdit.repeat">
+        <p>Targets:<el-input type="text" v-model="spiderToEdit.targets"></el-input>
+        </p>
+				<p>Repeat:<el-select placeholder="请选择" v-model="spiderToEdit.repeat">
+          <el-option v-for="item in repeatOptions" :key="item.value" :label="item.value" :value="item.value" :disabled="item.disabled">
+          </el-option>
+        </el-select>
 				</p>
-        <p>StartTime:<input type="datetime-local" v-model="spiderToEdit.starttime"></p>
-				<p>Active:
-					<input type="checkbox" v-model="spiderToEdit.active">
+        <p>StartTime:<el-date-picker type="datetime" v-model="spiderToEdit.starttime" placeholder="选择日期时间" value-format="yyyy-MM-ddTHH:mm"></el-date-picker>
+        </p>
+				<p>Active:<el-switch v-model="spiderToEdit.active" active-text="On" inactive-text="Off"></el-switch>
 				</p>
 			</form>
 		</div>
 		<div>
-			<button @click="confirmEdit" v-bind:disabled = "notValid">确认</button>
-      <button @click="cancelEdit">取消</button>
+			<el-button @click="confirmEdit" v-bind:disabled = "notValid">确认</el-button>
+      <el-button @click="cancelEdit">取消</el-button>
 		</div>
 	</div>
 </template>
@@ -32,12 +36,22 @@ export default {
     return {
       spiderToEdit: {
         name: '',
+        domain:'',
         url: '',
-        repeat: '',
-        starttime: '',
+        targets:'',
+        repeat: 'Daily',
+        starttime: new Date(),
         active: true,
       },
       addingNew: true,
+      repeatOptions: [
+        {value:'Yearly'},
+        {value:'Monthly'},
+        {value:'Weekly'},
+        {value:'Daily'},
+        {value:'Hourly'},
+        {value:'Never'},
+      ],
     }
   },
   computed: {
@@ -103,7 +117,7 @@ export default {
   },
   beforeDestroy(){
     this.$store.commit('setSpiderToEdit', null)
-  }
+  },
 }
 </script>
 

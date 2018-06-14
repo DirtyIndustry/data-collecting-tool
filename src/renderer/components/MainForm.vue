@@ -1,8 +1,8 @@
 <template>
   <div>
     <div>
-      <input type="button" value="Add" @click="addNewSpider">
-      <input type="button" value="Refresh" @click="refreshMainForm">
+      <el-button icon="el-icon-plus" @click="addNewSpider">Add</el-button>
+      <el-button icon="el-icon-refresh" @click="refreshMainForm">Refresh</el-button>
     </div>
     <div>
       <ul v-if="spiders.length">

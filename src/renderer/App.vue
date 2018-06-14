@@ -2,7 +2,7 @@
   <div id="app">
     <Header></Header>
     <router-view></router-view>
-    <Footer></Footer>
+    <Footer class="footer"></Footer>
   </div>
 </template>
 
@@ -32,11 +32,18 @@ export default {
   },
   methods: {
     checkTimeTable(){
+      if(this.timeTable[0] === undefined){
+        return
+      }
       let now = new Date()
       now.setMilliseconds(0)
       now.setSeconds(0)
-      if(this.timeTable[0].starttime <= now){
-          let list = this.timeTable[0].list
+      let index = 0
+      for(;this.timeTable[index].starttime < now & index < this.timeTable.length-1;){
+        index++
+      }
+      if(this.timeTable[index].starttime.getTime() === now.getTime()){
+          let list = this.timeTable[index].list
           this.$store.dispatch('updateTimeTable', list)
           for(let item of list){
             this.$electron.ipcRenderer.send('runSpider', item)
@@ -49,19 +56,6 @@ export default {
     this.readStaticFolder('Entry Files')
   },
   mounted(){
-    /*
-    this.worker = new Worker('./utils/timerWorker.js')
-    this.worker.addEventListener('message', (event)=>{
-      let list = event.data
-      for(let i = 0; i < list.length; i++){
-        this.$electron.ipcRenderer.send('runSpider', list[i])
-      }
-    })
-    setInterval(()=>{
-      console.log('post timetable')
-      this.worker.postMessage(this.$store.state.SpiderList.timetable)
-    }, 5000)
-    */
     setInterval(this.checkTimeTable, 10000)
   },
 }
@@ -69,4 +63,8 @@ export default {
 
 <style>
 /* CSS */
+.footer{
+  position:fixed;
+  bottom:0;
+}
 </style>

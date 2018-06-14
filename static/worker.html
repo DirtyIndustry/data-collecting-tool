@@ -21,35 +21,72 @@
       setSpider(args)
       document.getElementById("p1").innerHTML = this.spider.name
 
-      let url = 'http://www.hyyyyj.dl.gov.cn/hyhjyzhybjc/hyzhyb/gzdt/8320/8320.shtml'
-      //url = 'http://www.ziroom.com/'
+      let domainName = 'http://www.hyyyyj.dl.gov.cn'
+      let url = 'http://www.hyyyyj.dl.gov.cn/hyhjyzhybjc/hyzhyb/'
+
       http.get(url, (res) => {
-        var html = ''
+        let html = ''
         res.on('data', (data) => {
           html += data
         })
         res.on('end', () => {
-          let htmldata = getDataFromHtml(html)
-          //var slideListData = filterSlideList(html)
-          //printInfo(slideListData)
+          readDataUrl(domainName+getLinks(html))
         })
-      }).on('error', () => {
-        console.log('获取数据出错!')
       })
+
+      function readDataUrl(url) {
+        http.get(url, (res) => {
+          let html = ''
+          res.on('data', (data) => {
+            html += data
+          })
+          res.on('end', () => {
+            let htmldata = getDataFromHtml(html)
+          })
+        }).on('error', () => {
+          console.log('获取数据出错!')
+        })
+      }
+
+      function getLinks(html) {
+        if (html) {
+          let result = []
+          let $ = cheerio.load(html)
+          let linkDiv = $('#zty_yc_list')
+          let linkList = linkDiv.find('ul')
+          let listItems = linkList.find('li')
+          listItems.each(function (i, elem) {
+            let date = $(this).find('a').find('font').text()
+            let link = $(this).find('a').attr('href')
+            result.push({ date: date, link: link })
+          })
+          function SortByDate(x, y) {
+            return ((x.date === y.date) ? 0 : ((x.date > y.date) ? 1 : -1))
+          }
+          result.sort(SortByDate)
+          //console.log(result)
+          return result[result.length - 1].link
+        } else {
+          console.log('无数据传入')
+        }
+      }
 
       function getDataFromHtml(html) {
         if (html) {
           let result = []
           let $ = cheerio.load(html)
           let innerhtml = $('body').find('p')
-          innerhtml.each(function(i,elem){
+          innerhtml.each(function (i, elem) {
             let text = $(this).text()
             text = text.trim()
-            if(text !== ''){
+            if (text !== '') {
               result.push(text)
             }
           })
           console.log(result)
+          return result
+        } else {
+          console.log('无数据传入！')
         }
       }
 
