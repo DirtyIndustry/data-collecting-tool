@@ -18,7 +18,6 @@ export default {
   mixins: [xmlReader],
   data () {
     return {
-      worker: undefined,
     }
   },
   computed: {

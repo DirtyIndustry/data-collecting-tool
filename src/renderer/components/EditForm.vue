@@ -1,47 +1,130 @@
 <template>
 	<div>
-		<div>
-			<form>
-				<p>Name:<el-input type="text" v-model="spiderToEdit.name"></el-input>
-				</p>
-        <p>Domain:<el-input type="text" v-model="spiderToEdit.domain"></el-input>
-        </p>
-				<p>Url:<el-input type="text" v-model="spiderToEdit.url"></el-input>
-				</p>
-        <p>Targets:<el-input type="text" v-model="spiderToEdit.targets"></el-input>
-        </p>
-				<p>Repeat:<el-select placeholder="请选择" v-model="spiderToEdit.repeat">
-          <el-option v-for="item in repeatOptions" :key="item.value" :label="item.value" :value="item.value" :disabled="item.disabled">
-          </el-option>
+    <el-form :model="spiderToEdit" 
+             :rules="spiderValidRule"
+             ref="editformRef"
+             status-icon 
+             label-position="left"
+             label-width="100px">
+      <el-form-item label="Name" prop="name">
+        <el-input v-model="spiderToEdit.name"></el-input>
+      </el-form-item>
+      <el-form-item label="Domain" prop="domain">
+        <el-input v-model="spiderToEdit.domain"></el-input>
+      </el-form-item>
+      <el-form-item label="Url" prop="url">
+        <el-input type="text" v-model="spiderToEdit.url"></el-input>
+      </el-form-item>
+      <el-form-item label="Targets" prop="targets">
+        <el-input type="text" v-model.number="spiderToEdit.targets"></el-input>
+      </el-form-item>
+      <el-form-item label="Params" prop="params">
+        <EditableTable :tableData="spiderToEdit.params"></EditableTable>
+      </el-form-item>
+      <el-form-item label="Repeat" prop="repeat">
+        <el-select placeholder="请选择" v-model="spiderToEdit.repeat">
+          <el-option v-for="item in repeatOptions" :key="item.value" :label="item.value" :value="item.value" :disabled="item.disabled"></el-option>
         </el-select>
-				</p>
-        <p>StartTime:<el-date-picker type="datetime" v-model="spiderToEdit.starttime" placeholder="选择日期时间" value-format="yyyy-MM-ddTHH:mm"></el-date-picker>
-        </p>
-				<p>Active:<el-switch v-model="spiderToEdit.active" active-text="On" inactive-text="Off"></el-switch>
-				</p>
-			</form>
-		</div>
-		<div>
-			<el-button @click="confirmEdit" v-bind:disabled = "notValid">确认</el-button>
-      <el-button @click="cancelEdit">取消</el-button>
-		</div>
+      </el-form-item>
+      <el-form-item label="Start Time" prop="starttime">
+        <el-date-picker type="datetime" v-model="spiderToEdit.starttime" placeholder="选择日期时间" value-format="yyyy-MM-ddTHH:mm"></el-date-picker>
+      </el-form-item>
+      <el-form-item label="Active" prop="active">
+        <el-switch v-model="spiderToEdit.active" active-text="On" inactive-text="Off"></el-switch>
+      </el-form-item>
+      <el-form-item>
+        <el-button @click="submitForm('editformRef')" type="primary">确认</el-button>
+        <el-button @click="cancelEdit">取消</el-button>
+      </el-form-item>
+    </el-form>
 	</div>
 </template>
 
 <script>
 import path from 'path'
+import EditableTable from './EditForm/EditableTable.vue'
 
 export default {
+  components:{
+    EditableTable,
+  },
   data () {
+    var validateName = (rule, value, callback)=>{
+      if(!value){
+        return callback(new Error('名称不能为空'))
+      }
+      setTimeout(()=>{
+        if (value.startsWith(' ') | value.endsWith(' ')){
+          return callback(new Error('名称不能以空格开始或结束'))
+        }
+        let reg = new RegExp(/'|#|&|\\|\/|:|\?|"|<|>|\*|\|/g)
+        if (reg.test(value) === true) {
+          return callback(new Error('名称不能包含\'#&\\\/:?"<>*|'))
+        } else {
+          return callback()
+        }
+      }, 500)
+    }
+    var validateName2 = (rule,value,callback)=>{
+      if(this.isContain !== this.isEqual){
+        return callback(new Error('该名称已经被占用'))
+      }else{
+        return callback()
+      }
+    }
+    var validateTargets = (rule, value, callback) => {
+      if(!value){
+        return callback(new Error('目标不能为空'))
+      }
+      if(!Number.isInteger(value)){
+        return callback(new Error('请输入数字'))
+      }else{
+        return callback()
+      }
+    }
+    var validateStartTime = (rule,value,callback)=>{
+      if(!value){
+        return callback(new Error('开始时间不能为空'))
+      }
+      let date = new Date(value)
+      if(date.getSeconds() > 0 | date.getMilliseconds()>0){
+        date.setSeconds(0)
+        date.setMilliseconds(0)
+        return callback()
+      }else{
+        return callback()
+      }
+    }
     return {
       spiderToEdit: {
         name: '',
         domain:'',
         url: '',
         targets:'',
+        params:[
+          {
+            paramName:'imaname',
+            paramValue:'imavalue',
+            paramProp:'prop1',
+          },
+          {
+            paramName:'imanothername',
+            paramValue:'imanothervalue',
+            paramProp:'imanotherproperty',
+          },
+        ],
         repeat: 'Daily',
-        starttime: new Date(),
+        starttime: '',
         active: true,
+      },
+      spiderValidRule:{
+        name:
+        [
+          {validator:validateName, trigger:'blur'},
+          {validator:validateName2, trigger:'blur'},
+        ],
+        targets:[{validator:validateTargets, trigger:'blur'}],
+        starttime:[{validator:validateStartTime, trigger:'blur'}]
       },
       addingNew: true,
       repeatOptions: [
@@ -52,6 +135,7 @@ export default {
         {value:'Hourly'},
         {value:'Never'},
       ],
+      formLabelWidth: '100px',
     }
   },
   computed: {
@@ -75,20 +159,21 @@ export default {
     },
   },
   methods: {
-    confirmEdit () {
-      if (this.name !== '') {
-        let xmlWriter = require('../utils/xmlWriter')
-        if (!this.addingNew) {
-          xmlWriter.deleteXml(this.$store.state.SpiderList.spiderToEdit.name)
-          this.$store.dispatch('removeSpider', this.$store.state.SpiderList.spiderToEdit)
+    submitForm(formName){
+      this.$refs[formName].validate((valid)=>{
+        if(valid){
+          let xmlWriter = require('../utils/xmlWriter')
+          if (!this.addingNew) {
+            xmlWriter.deleteXml(this.$store.state.SpiderList.spiderToEdit.name)
+            this.$store.dispatch('removeSpider', this.$store.state.SpiderList.spiderToEdit)
+          }
+          this.$store.dispatch('addSpider', this.spiderToEdit)
+          xmlWriter.writeXml(this.spiderToEdit)
+          this.$router.push({ path: '/' })
+        } else {
+          return false
         }
-
-        this.$store.dispatch('addSpider', this.spiderToEdit)
-        //this.$store.dispatch('buildTimeTable')
-        xmlWriter.writeXml(this.spiderToEdit)
-
-        this.$router.push({ path: '/' })
-      }
+      })
     },
     cancelEdit () {
       this.$router.push({ path: '/' })

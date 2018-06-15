@@ -1,8 +1,8 @@
 <template>
-    <el-card class="item-card" shadow="hover">
-        <el-row type="flex" align="middle" justify="center">
+  <el-card class="item-card" shadow="hover">
+    <el-row type="flex" align="middle" justify="center">
       <el-col :span="2">
-          <el-checkbox :checked="spider.active" @click="switchActive"></el-checkbox>
+        <el-checkbox :checked="spider.active" @click="switchActive"></el-checkbox>
       </el-col>
       <el-col :span="18">
         <el-row>{{spider.name}}</el-row>
@@ -18,8 +18,8 @@
           <el-button round size="mini" type="danger" @click="$emit('remove', spider)">Del</el-button>
         </el-row>
       </el-col>
-      </el-row>
-    </el-card>
+    </el-row>
+  </el-card>
 </template>
 
 <script>
