@@ -103,14 +103,11 @@ export default {
         targets:'',
         params:[
           {
-            paramName:'imaname',
-            paramValue:'imavalue',
-            paramProp:'prop1',
-          },
-          {
-            paramName:'imanothername',
-            paramValue:'imanothervalue',
-            paramProp:'imanotherproperty',
+            paramName:'',
+            paramRoot:'',
+            paramPassing:'',
+            paramTargetType: '',
+            paramPick: '',
           },
         ],
         repeat: 'Daily',
@@ -152,11 +149,6 @@ export default {
     isContain () {
       return this.$store.state.SpiderList.filelist.includes(this.spiderToEdit.name.toLowerCase())
     },
-    notValid () {
-      if(this.checkName()===true){
-        return !(this.isEqual === this.isContain)
-      }else return true
-    },
   },
   methods: {
     submitForm(formName){
@@ -177,17 +169,6 @@ export default {
     },
     cancelEdit () {
       this.$router.push({ path: '/' })
-    },
-    checkName () {
-      if (this.spiderToEdit.name.startsWith(' ') | this.spiderToEdit.name.endsWith(' ')){
-        return false
-      }
-      let reg = new RegExp(/'|#|&|\\|\/|:|\?|"|<|>|\*|\|/g)
-      if (reg.test(this.spiderToEdit.name) === true) {
-        return false
-      } else {
-        return true
-      }
     },
   },
   created () {

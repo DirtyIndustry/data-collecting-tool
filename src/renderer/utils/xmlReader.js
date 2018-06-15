@@ -48,7 +48,7 @@ export default {
             xml2js.parseString(
                 xml,
                 {
-                    explicitArray: false,
+                    explicitArray: true,
                     explicitRoot: false,
                     valueProcessors: [this.convertProcessor]
                 },

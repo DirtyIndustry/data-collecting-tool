@@ -21,18 +21,30 @@
       setSpider(args)
       document.getElementById("p1").innerHTML = this.spider.name
 
-      let domainName = 'http://www.hyyyyj.dl.gov.cn'
-      let url = 'http://www.hyyyyj.dl.gov.cn/hyhjyzhybjc/hyzhyb/'
 
-      http.get(url, (res) => {
-        let html = ''
-        res.on('data', (data) => {
-          html += data
+      function working(spider) {
+        let domain = this.spider.domain
+        let url = this.spider.url
+        let div
+        for (let param of this.spider.params) {
+          
+        }
+      }
+
+      function readDaLianHaiYangJu() {
+        let domainName = 'http://www.hyyyyj.dl.gov.cn'
+        let url = 'http://www.hyyyyj.dl.gov.cn/hyhjyzhybjc/hyzhyb/'
+
+        http.get(url, (res) => {
+          let html = ''
+          res.on('data', (data) => {
+            html += data
+          })
+          res.on('end', () => {
+            readDataUrl(domainName + getLinks(html))
+          })
         })
-        res.on('end', () => {
-          readDataUrl(domainName+getLinks(html))
-        })
-      })
+      }
 
       function readDataUrl(url) {
         http.get(url, (res) => {
